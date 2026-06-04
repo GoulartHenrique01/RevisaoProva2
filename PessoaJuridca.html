@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Pessoa Jurídica</title>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+
+        input{
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+        }
+
+        button{
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        table{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td{
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Cadastro Pessoa Jurídica</h1>
+
+<input type="text" id="razaoSocial" placeholder="Razão Social">
+<input type="date" id="dataFundacao">
+<input type="text" id="inscricaoEstadual" placeholder="Inscrição Estadual">
+<input type="text" id="cnpj" placeholder="CNPJ">
+<input type="email" id="email" placeholder="Email">
+
+<button onclick="criarPessoaJuridica()">Cadastrar</button>
+<button onclick="listarPessoasJuridicas()">Listar</button>
+
+<h2>Atualizar Pessoa Jurídica</h2>
+
+<input type="number" id="idAtualizar" placeholder="ID">
+<button onclick="atualizarPessoaJuridica()">Atualizar</button>
+
+<h2>Excluir Pessoa Jurídica</h2>
+
+<input type="number" id="idExcluir" placeholder="ID">
+<button onclick="deletarPessoaJuridica()">Excluir</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Razão Social</th>
+            <th>Data Fundação</th>
+            <th>Inscrição Estadual</th>
+            <th>CNPJ</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+
+    <tbody id="tabelaPessoaJuridica"></tbody>
+</table>
+
+<script>
+
+const API = "http://localhost:8080/pessoaJuridica";
+
+async function listarPessoasJuridicas(){
+
+    const resposta = await fetch(`${API}/listar`);
+    const lista = await resposta.json();
+
+    const tabela = document.getElementById("tabelaPessoaJuridica");
+    tabela.innerHTML = "";
+
+    lista.forEach(pessoa => {
+
+        tabela.innerHTML += `
+            <tr>
+                <td>${pessoa.id}</td>
+                <td>${pessoa.razaoSocial}</td>
+                <td>${pessoa.dataFundacao}</td>
+                <td>${pessoa.inscricaoEstadual}</td>
+                <td>${pessoa.cnpj}</td>
+                <td>${pessoa.email}</td>
+            </tr>
+        `;
+    });
+}
+
+async function criarPessoaJuridica(){
+
+    const pessoa = {
+        razaoSocial: document.getElementById("razaoSocial").value,
+        dataFundacao: document.getElementById("dataFundacao").value,
+        inscricaoEstadual: document.getElementById("inscricaoEstadual").value,
+        cnpj: document.getElementById("cnpj").value,
+        email: document.getElementById("email").value
+    };
+
+    const resposta = await fetch(`${API}/criar`, {
+        method: "POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(pessoa)
+    });
+
+    if(resposta.ok){
+        alert("Pessoa Jurídica cadastrada!");
+        listarPessoasJuridicas();
+    }else{
+        const erro = await resposta.text();
+        alert("Erro: " + erro);
+    }
+}
+
+async function atualizarPessoaJuridica(){
+
+    const id = document.getElementById("idAtualizar").value;
+
+    const pessoa = {
+        razaoSocial: document.getElementById("razaoSocial").value,
+        dataFundacao: document.getElementById("dataFundacao").value,
+        inscricaoEstadual: document.getElementById("inscricaoEstadual").value,
+        cnpj: document.getElementById("cnpj").value,
+        email: document.getElementById("email").value
+    };
+
+    const resposta = await fetch(`${API}/atualizar/${id}`, {
+        method:"PUT",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(pessoa)
+    });
+
+    if(resposta.ok){
+        alert("Atualizado com sucesso!");
+        listarPessoasJuridicas();
+    }else{
+        const erro = await resposta.text();
+        alert("Erro: " + erro);
+    }
+}
+
+async function deletarPessoaJuridica(){
+
+    const id = document.getElementById("idExcluir").value;
+
+    const resposta = await fetch(`${API}/deletar/${id}`, {
+        method:"DELETE"
+    });
+
+    if(resposta.ok){
+        alert("Excluído com sucesso!");
+        listarPessoasJuridicas();
+    }else{
+        alert("Erro ao excluir");
+    }
+}
+
+listarPessoasJuridicas();
+
+</script>
+
+</body>
+</html>
