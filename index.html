@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Pessoa Física</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        input{
+            display: block;
+            margin: 10px 0;
+            padding: 8px;
+            width: 100%;
+        }
+        button{
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        table{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td{
+            border: 1px solid black;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Cadastro Pessoa Física</h1>
+
+    <input type="text" id="nome" placeholder="Nome">
+    <input type="text" id="cpf" placeholder="CPF">
+    <input type="date" id="dataNascimento">
+    <input type="email" id="email" placeholder="Email">
+
+    <button onclick="criarPessoa()">Cadastrar</button>
+    <button onclick="listarPessoas()">Listar</button>
+
+    <h2>Atualizar Pessoa</h2>
+
+    <input type="number" id="idAtualizar" placeholder="ID">
+    <button onclick="atualizarPessoa()">Atualizar</button>
+
+    <h2>Excluir Pessoa</h2>
+
+    <input type="number" id="idExcluir" placeholder="ID">
+    <button onclick="deletarPessoa()">Excluir</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Data Nascimento</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaPessoas"></tbody>
+    </table>
+
+<script>
+
+const API = "http://localhost:8080/pessoaFisica";
+
+async function listarPessoas(){
+
+    const resposta = await fetch(`${API}/listar`);
+    const pessoas = await resposta.json();
+
+    const tabela = document.getElementById("tabelaPessoas");
+    tabela.innerHTML = "";
+
+    pessoas.forEach(pessoa => {
+
+        tabela.innerHTML += `
+            <tr>
+                <td>${pessoa.id}</td>
+                <td>${pessoa.nome}</td>
+                <td>${pessoa.cpf}</td>
+                <td>${pessoa.dataNascimento}</td>
+                <td>${pessoa.email}</td>
+            </tr>
+        `;
+    });
+}
+
+async function criarPessoa(){
+
+    const pessoa = {
+        nome: document.getElementById("nome").value,
+        cpf: document.getElementById("cpf").value,
+        dataNascimento: document.getElementById("dataNascimento").value,
+        email: document.getElementById("email").value
+    };
+
+    const resposta = await fetch(`${API}/criar`,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(pessoa)
+    });
+
+    if(resposta.ok){
+        alert("Pessoa cadastrada!");
+        listarPessoas();
+    }else{
+        alert("Erro ao cadastrar");
+    }
+}
+
+async function atualizarPessoa(){
+
+    const id = document.getElementById("idAtualizar").value;
+
+    const pessoa = {
+        nome: document.getElementById("nome").value,
+        cpf: document.getElementById("cpf").value,
+        dataNascimento: document.getElementById("dataNascimento").value,
+        email: document.getElementById("email").value
+    };
+
+    const resposta = await fetch(`${API}/atualizar/${id}`,{
+        method:"PUT",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(pessoa)
+    });
+
+    if(resposta.ok){
+        alert("Atualizado com sucesso!");
+        listarPessoas();
+    }else{
+        alert("Erro ao atualizar");
+    }
+}
+
+async function deletarPessoa(){
+
+    const id = document.getElementById("idExcluir").value;
+
+    const resposta = await fetch(`${API}/deletar/${id}`,{
+        method:"DELETE"
+    });
+
+    if(resposta.ok){
+        alert("Excluído com sucesso!");
+        listarPessoas();
+    }else{
+        alert("Erro ao excluir");
+    }
+}
+
+listarPessoas();
+
+</script>
+
+</body>
+</html>
