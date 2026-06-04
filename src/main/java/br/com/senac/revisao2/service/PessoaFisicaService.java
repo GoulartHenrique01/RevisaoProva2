@@ -38,7 +38,6 @@ public class PessoaFisicaService {
     }
 
     public PessoaFisica criar(PessoaFisicaRequestDto pessoaFisica){
-
         validarCpf(pessoaFisica.getCpf());
 
         PessoaFisica pessoaPersist =

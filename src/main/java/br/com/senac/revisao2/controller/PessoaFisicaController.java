@@ -45,6 +45,7 @@ public class PessoaFisicaController{
                 return ResponseEntity.internalServerError().body(null);
             }
         }
+
         @DeleteMapping("/deletar/{id}")
         public ResponseEntity<PessoaFisica> deletar(@PathVariable Long id){
             try {
