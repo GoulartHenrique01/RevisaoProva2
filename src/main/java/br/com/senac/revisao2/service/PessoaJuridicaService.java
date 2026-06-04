@@ -27,7 +27,12 @@ public class PessoaJuridicaService {
             PessoaJuridica pessoaPersist =
                     this.pessoaRequestDtoParaPessoaJuridica(pessoaJuridica);
 
+            PessoaJuridica pessoaBanco = pessoaJuridicaRepositorio.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Pessoa não encontrada"));
+
+
             pessoaPersist.setId(id);
+            pessoaPersist.setEmail(pessoaBanco.getEmail());
 
             return pessoaJuridicaRepositorio.save(pessoaPersist);
         }
