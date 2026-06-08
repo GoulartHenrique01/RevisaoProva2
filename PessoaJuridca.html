@@ -69,6 +69,7 @@
             <th>Inscrição Estadual</th>
             <th>CNPJ</th>
             <th>Email</th>
+            <th>Ações</th>
         </tr>
     </thead>
 
@@ -78,6 +79,28 @@
 <script>
 
 const API = "http://localhost:8080/pessoaJuridica";
+
+function carregarPessoa(
+    id,
+    razaoSocial,
+    dataFundacao,
+    inscricaoEstadual,
+    cnpj,
+    email
+){
+
+    document.getElementById("idAtualizar").value = id;
+    document.getElementById("razaoSocial").value = razaoSocial;
+    document.getElementById("dataFundacao").value = dataFundacao;
+    document.getElementById("inscricaoEstadual").value = inscricaoEstadual;
+    document.getElementById("cnpj").value = cnpj;
+    document.getElementById("email").value = email;
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
 
 async function listarPessoasJuridicas(){
 
@@ -97,6 +120,18 @@ async function listarPessoasJuridicas(){
                 <td>${pessoa.inscricaoEstadual}</td>
                 <td>${pessoa.cnpj}</td>
                 <td>${pessoa.email}</td>
+                <td>
+                    <button onclick="carregarPessoa(
+                        ${pessoa.id},
+                        '${pessoa.razaoSocial}',
+                        '${pessoa.dataFundacao}',
+                        '${pessoa.inscricaoEstadual}',
+                        '${pessoa.cnpj}',
+                        '${pessoa.email}'
+                    )">
+                        Editar
+                    </button>
+                </td>
             </tr>
         `;
     });
